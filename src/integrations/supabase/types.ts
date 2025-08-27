@@ -14,16 +14,362 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      applications: {
+        Row: {
+          applicant_id: string
+          applied_at: string | null
+          id: string
+          message: string | null
+          opportunity_id: string
+          status: string | null
+        }
+        Insert: {
+          applicant_id: string
+          applied_at?: string | null
+          id?: string
+          message?: string | null
+          opportunity_id: string
+          status?: string | null
+        }
+        Update: {
+          applicant_id?: string
+          applied_at?: string | null
+          id?: string
+          message?: string | null
+          opportunity_id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applications_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_progress: {
+        Row: {
+          completed_at: string | null
+          completion_percentage: number | null
+          created_at: string | null
+          id: string
+          progress_data: Json | null
+          tool_type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completion_percentage?: number | null
+          created_at?: string | null
+          id?: string
+          progress_data?: Json | null
+          tool_type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          completion_percentage?: number | null
+          created_at?: string | null
+          id?: string
+          progress_data?: Json | null
+          tool_type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      impact_metrics: {
+        Row: {
+          created_at: string | null
+          filters: Json | null
+          id: string
+          metric_type: string
+          metric_value: number
+          recorded_date: string | null
+          region: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          filters?: Json | null
+          id?: string
+          metric_type: string
+          metric_value: number
+          recorded_date?: string | null
+          region?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          filters?: Json | null
+          id?: string
+          metric_type?: string
+          metric_value?: number
+          recorded_date?: string | null
+          region?: string | null
+        }
+        Relationships: []
+      }
+      mentorship_sessions: {
+        Row: {
+          answer: string | null
+          answer_audio_url: string | null
+          answered_at: string | null
+          category: string | null
+          created_at: string | null
+          id: string
+          is_public: boolean | null
+          mentee_id: string
+          mentor_id: string | null
+          question: string
+          question_audio_url: string | null
+          status: string | null
+        }
+        Insert: {
+          answer?: string | null
+          answer_audio_url?: string | null
+          answered_at?: string | null
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          mentee_id: string
+          mentor_id?: string | null
+          question: string
+          question_audio_url?: string | null
+          status?: string | null
+        }
+        Update: {
+          answer?: string | null
+          answer_audio_url?: string | null
+          answered_at?: string | null
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          mentee_id?: string
+          mentor_id?: string | null
+          question?: string
+          question_audio_url?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
+      opportunities: {
+        Row: {
+          category: string | null
+          contact_info: string | null
+          contact_method: string | null
+          created_at: string | null
+          deadline: string | null
+          description: string
+          employer_id: string | null
+          id: string
+          is_remote: boolean | null
+          location: string | null
+          requirements: string[] | null
+          salary_max: number | null
+          salary_min: number | null
+          skills_needed: string[] | null
+          status: string | null
+          title: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          contact_info?: string | null
+          contact_method?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          description: string
+          employer_id?: string | null
+          id?: string
+          is_remote?: boolean | null
+          location?: string | null
+          requirements?: string[] | null
+          salary_max?: number | null
+          salary_min?: number | null
+          skills_needed?: string[] | null
+          status?: string | null
+          title: string
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          contact_info?: string | null
+          contact_method?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          description?: string
+          employer_id?: string | null
+          id?: string
+          is_remote?: boolean | null
+          location?: string | null
+          requirements?: string[] | null
+          salary_max?: number | null
+          salary_min?: number | null
+          skills_needed?: string[] | null
+          status?: string | null
+          title?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          age: number | null
+          created_at: string | null
+          email: string | null
+          full_name: string
+          gender: string | null
+          id: string
+          is_pwd: boolean | null
+          is_rural: boolean | null
+          location: string | null
+          phone: string | null
+          preferred_language: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          age?: number | null
+          created_at?: string | null
+          email?: string | null
+          full_name: string
+          gender?: string | null
+          id?: string
+          is_pwd?: boolean | null
+          is_rural?: boolean | null
+          location?: string | null
+          phone?: string | null
+          preferred_language?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          age?: number | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string
+          gender?: string | null
+          id?: string
+          is_pwd?: boolean | null
+          is_rural?: boolean | null
+          location?: string | null
+          phone?: string | null
+          preferred_language?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      skills: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          experience_years: number | null
+          hourly_rate: number | null
+          id: string
+          is_available: boolean | null
+          portfolio_images: string[] | null
+          skill_category: string
+          skill_name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          experience_years?: number | null
+          hourly_rate?: number | null
+          id?: string
+          is_available?: boolean | null
+          portfolio_images?: string[] | null
+          skill_category: string
+          skill_name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          experience_years?: number | null
+          hourly_rate?: number | null
+          id?: string
+          is_available?: boolean | null
+          portfolio_images?: string[] | null
+          skill_category?: string
+          skill_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ussd_interactions: {
+        Row: {
+          created_at: string | null
+          id: string
+          interaction_type: string | null
+          phone_number: string
+          response_sent: string | null
+          session_id: string | null
+          user_input: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          interaction_type?: string | null
+          phone_number: string
+          response_sent?: string | null
+          session_id?: string | null
+          user_input?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          interaction_type?: string | null
+          phone_number?: string
+          response_sent?: string | null
+          session_id?: string | null
+          user_input?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "youth" | "employer" | "ngo" | "government" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +496,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["youth", "employer", "ngo", "government", "admin"],
+    },
   },
 } as const
