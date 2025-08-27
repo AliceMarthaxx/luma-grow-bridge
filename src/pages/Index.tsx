@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Users, Building, BarChart3, ArrowRight, Smartphone, Globe, MessageSquare } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,7 @@ type UserType = "youth" | "ngo" | "government" | null;
 
 const Index = () => {
   const [selectedUserType, setSelectedUserType] = useState<UserType>(null);
+  const navigate = useNavigate();
 
   if (selectedUserType === "youth") {
     return <YouthDashboard onBack={() => setSelectedUserType(null)} />;
@@ -52,7 +54,7 @@ const Index = () => {
               offline-first technology and multi-language support
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" variant="hero" className="text-lg px-8 py-4">
+              <Button size="lg" variant="hero" className="text-lg px-8 py-4" onClick={() => navigate('/app')}>
                 Get Started
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -223,7 +225,7 @@ const Index = () => {
             Join thousands of rural youth accessing entrepreneurship opportunities across Northern Uganda
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary" className="text-lg px-8 py-4">
+            <Button size="lg" variant="secondary" className="text-lg px-8 py-4" onClick={() => navigate('/app')}>
               Start Your Journey
             </Button>
             <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary">
