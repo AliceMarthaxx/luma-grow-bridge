@@ -1,322 +1,418 @@
-import { useState } from "react";
-import { ArrowLeft, Users, MessageSquare, Calendar, TrendingUp, Plus, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Header from "@/components/Header";
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Users, TrendingUp, MapPin, Calendar, FileDown, Filter } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
-interface NGODashboardProps {
-  onBack: () => void;
+interface ImpactMetric {
+  id: string;
+  metric_type: string;
+  metric_value: number;
+  region: string;
+  recorded_date: string;
+  filters: any;
 }
 
-const NGODashboard = ({ onBack }: NGODashboardProps) => {
-  const [searchQuery, setSearchQuery] = useState("");
+interface DashboardStats {
+  totalYouth: number;
+  ruralYouth: number;
+  pwdYouth: number;
+  femaleYouth: number;
+  jobPlacements: number;
+  skillsListed: number;
+  mentorshipSessions: number;
+  ussdInteractions: number;
+}
 
-  const mentorshipRequests = [
-    {
-      id: 1,
-      name: "Sarah Akello",
-      age: 22,
-      location: "Gulu",
-      interest: "Agricultural Business",
-      status: "pending",
-      requestedAt: "2 days ago"
-    },
-    {
-      id: 2,
-      name: "John Otim",
-      age: 24,
-      location: "Arua",
-      interest: "Digital Marketing",
-      status: "matched",
-      requestedAt: "1 week ago"
-    },
-    {
-      id: 3,
-      name: "Grace Lamwaka",
-      age: 20,
-      location: "Lira",
-      interest: "Fashion Design",
-      status: "pending",
-      requestedAt: "3 days ago"
+const NGODashboard = () => {
+  const [stats, setStats] = useState<DashboardStats>({
+    totalYouth: 0,
+    ruralYouth: 0,
+    pwdYouth: 0,
+    femaleYouth: 0,
+    jobPlacements: 0,
+    skillsListed: 0,
+    mentorshipSessions: 0,
+    ussdInteractions: 0
+  });
+  const [metrics, setMetrics] = useState<ImpactMetric[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [regionFilter, setRegionFilter] = useState<string>('all');
+  const [timeFilter, setTimeFilter] = useState<string>('30');
+
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (user) {
+      fetchDashboardData();
+      fetchImpactMetrics();
     }
-  ];
+  }, [user, regionFilter, timeFilter]);
 
-  const programs = [
-    {
-      id: 1,
-      title: "Youth Agribusiness Accelerator",
-      participants: 45,
-      startDate: "March 1, 2024",
-      duration: "6 months",
-      status: "active"
-    },
-    {
-      id: 2,
-      title: "Digital Skills for Rural Youth",
-      participants: 78,
-      startDate: "February 15, 2024",
-      duration: "3 months",
-      status: "active"
-    },
-    {
-      id: 3,
-      title: "Women in Business Leadership",
-      participants: 32,
-      startDate: "April 1, 2024",
-      duration: "4 months",
-      status: "upcoming"
-    }
-  ];
+  const fetchDashboardData = async () => {
+    try {
+      // Get user demographics
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('*');
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "pending": return "bg-amber-100 text-amber-800";
-      case "matched": return "bg-green-100 text-green-800";
-      case "active": return "bg-blue-100 text-blue-800";
-      case "upcoming": return "bg-purple-100 text-purple-800";
-      default: return "bg-gray-100 text-gray-800";
+      if (profiles) {
+        const totalYouth = profiles.length;
+        const ruralYouth = profiles.filter(p => p.is_rural).length;
+        const pwdYouth = profiles.filter(p => p.is_pwd).length;
+        const femaleYouth = profiles.filter(p => p.gender === 'female').length;
+
+        // Get job applications (as proxy for placements)
+        const { count: jobPlacements } = await supabase
+          .from('applications')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'accepted');
+
+        // Get skills count
+        const { count: skillsListed } = await supabase
+          .from('skills')
+          .select('*', { count: 'exact', head: true });
+
+        // Get mentorship sessions
+        const { count: mentorshipSessions } = await supabase
+          .from('mentorship_sessions')
+          .select('*', { count: 'exact', head: true });
+
+        // Get USSD interactions
+        const { count: ussdInteractions } = await supabase
+          .from('ussd_interactions')
+          .select('*', { count: 'exact', head: true });
+
+        setStats({
+          totalYouth,
+          ruralYouth,
+          pwdYouth,
+          femaleYouth,
+          jobPlacements: jobPlacements || 0,
+          skillsListed: skillsListed || 0,
+          mentorshipSessions: mentorshipSessions || 0,
+          ussdInteractions: ussdInteractions || 0
+        });
+      }
+    } catch (error: any) {
+      toast({ title: "Error loading dashboard data", description: error.message, variant: "destructive" });
     }
   };
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-3">
-            <Button variant="ghost" onClick={onBack}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">NGO Dashboard</h1>
-              <p className="text-muted-foreground">Support and mentor the next generation</p>
-            </div>
+  const fetchImpactMetrics = async () => {
+    try {
+      let query = supabase
+        .from('impact_metrics')
+        .select('*')
+        .order('recorded_date', { ascending: false });
+
+      if (regionFilter !== 'all') {
+        query = query.eq('region', regionFilter);
+      }
+
+      const daysAgo = new Date();
+      daysAgo.setDate(daysAgo.getDate() - parseInt(timeFilter));
+      query = query.gte('recorded_date', daysAgo.toISOString().split('T')[0]);
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+      setMetrics(data || []);
+    } catch (error: any) {
+      toast({ title: "Error loading metrics", description: error.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const exportData = async () => {
+    try {
+      // Export basic CSV format
+      const csvData = [
+        ['Metric', 'Value', 'Region', 'Date'],
+        ['Total Youth', stats.totalYouth, 'All', new Date().toISOString().split('T')[0]],
+        ['Rural Youth', stats.ruralYouth, 'All', new Date().toISOString().split('T')[0]],
+        ['PWD Youth', stats.pwdYouth, 'All', new Date().toISOString().split('T')[0]],
+        ['Female Youth', stats.femaleYouth, 'All', new Date().toISOString().split('T')[0]],
+        ['Job Placements', stats.jobPlacements, 'All', new Date().toISOString().split('T')[0]],
+        ['Skills Listed', stats.skillsListed, 'All', new Date().toISOString().split('T')[0]],
+        ['Mentorship Sessions', stats.mentorshipSessions, 'All', new Date().toISOString().split('T')[0]],
+        ['USSD Interactions', stats.ussdInteractions, 'All', new Date().toISOString().split('T')[0]]
+      ];
+
+      const csvContent = csvData.map(row => row.join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `luma-link-impact-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+
+      toast({ title: "Data exported successfully!" });
+    } catch (error: any) {
+      toast({ title: "Error exporting data", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const inclusionPercentage = stats.totalYouth > 0 
+    ? Math.round(((stats.ruralYouth + stats.pwdYouth + stats.femaleYouth) / (stats.totalYouth * 3)) * 100)
+    : 0;
+
+  if (loading) {
+    return (
+      <div className="p-4 space-y-4">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-muted rounded w-1/3"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="h-32 bg-muted rounded"></div>
+            ))}
           </div>
-          <Button variant="accent">
-            <Plus className="h-4 w-4 mr-2" />
-            New Program
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 pb-20 space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Impact Dashboard</h1>
+          <p className="text-muted-foreground">Monitor youth inclusion and program effectiveness</p>
+        </div>
+        
+        <div className="flex flex-wrap gap-2">
+          <Select value={regionFilter} onValueChange={setRegionFilter}>
+            <SelectTrigger className="w-32">
+              <Filter className="h-4 w-4 mr-2" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Regions</SelectItem>
+              <SelectItem value="Arua">Arua</SelectItem>
+              <SelectItem value="Yumbe">Yumbe</SelectItem>
+              <SelectItem value="Nebbi">Nebbi</SelectItem>
+              <SelectItem value="Adjumani">Adjumani</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Select value={timeFilter} onValueChange={setTimeFilter}>
+            <SelectTrigger className="w-28">
+              <Calendar className="h-4 w-4 mr-2" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="7">7 days</SelectItem>
+              <SelectItem value="30">30 days</SelectItem>
+              <SelectItem value="90">90 days</SelectItem>
+              <SelectItem value="365">1 year</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Button onClick={exportData} variant="outline" size="sm">
+            <FileDown className="h-4 w-4 mr-2" />
+            Export
           </Button>
         </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <Card className="bg-gradient-to-r from-primary to-primary-glow border-0">
-            <CardContent className="p-4">
-              <div className="text-white">
-                <p className="text-sm opacity-90">Active Mentees</p>
-                <p className="text-2xl font-bold">156</p>
-                <p className="text-xs opacity-75">+12 this month</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-gradient-to-r from-accent to-accent-light border-0">
-            <CardContent className="p-4">
-              <div className="text-white">
-                <p className="text-sm opacity-90">Running Programs</p>
-                <p className="text-2xl font-bold">8</p>
-                <p className="text-xs opacity-75">2 starting soon</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-gradient-to-r from-trust to-blue-500 border-0">
-            <CardContent className="p-4">
-              <div className="text-white">
-                <p className="text-sm opacity-90">Success Rate</p>
-                <p className="text-2xl font-bold">87%</p>
-                <p className="text-xs opacity-75">Program completion</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-gradient-to-r from-green-500 to-green-600 border-0">
-            <CardContent className="p-4">
-              <div className="text-white">
-                <p className="text-sm opacity-90">Impact Score</p>
-                <p className="text-2xl font-bold">4.8</p>
-                <p className="text-xs opacity-75">Based on feedback</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Tabs defaultValue="mentorship" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="mentorship">Mentorship</TabsTrigger>
-            <TabsTrigger value="programs">Programs</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="mentorship" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold">Mentorship Requests</h3>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search mentees..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 w-64"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {mentorshipRequests.map((request) => (
-                <Card key={request.id} className="hover:shadow-medium transition-all duration-300">
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg">{request.name}</CardTitle>
-                        <CardDescription>
-                          {request.age} years old • {request.location}
-                        </CardDescription>
-                      </div>
-                      <Badge className={getStatusColor(request.status)}>
-                        {request.status}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-sm text-muted-foreground">Interest Area</p>
-                        <p className="font-medium">{request.interest}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Requested {request.requestedAt}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button size="sm" className="flex-1">
-                          <MessageSquare className="h-3 w-3 mr-1" />
-                          Message
-                        </Button>
-                        {request.status === "pending" && (
-                          <Button size="sm" variant="outline" className="flex-1">
-                            Accept
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="programs" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold">Training Programs</h3>
-              <Button variant="accent">
-                <Plus className="h-4 w-4 mr-2" />
-                Create Program
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {programs.map((program) => (
-                <Card key={program.id} className="hover:shadow-medium transition-all duration-300">
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg">{program.title}</CardTitle>
-                        <CardDescription>
-                          {program.duration} • Starting {program.startDate}
-                        </CardDescription>
-                      </div>
-                      <Badge className={getStatusColor(program.status)}>
-                        {program.status}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Participants</span>
-                        <div className="flex items-center">
-                          <Users className="h-4 w-4 mr-1 text-primary" />
-                          <span className="font-medium">{program.participants}</span>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button size="sm" className="flex-1">
-                          View Details
-                        </Button>
-                        <Button size="sm" variant="outline" className="flex-1">
-                          Manage
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="analytics" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <TrendingUp className="h-5 w-5 mr-2 text-primary" />
-                    Program Success Metrics
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">Completion Rate</span>
-                      <span className="font-bold text-green-600">87%</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">Job Placement Rate</span>
-                      <span className="font-bold text-green-600">72%</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">Avg. Income Increase</span>
-                      <span className="font-bold text-green-600">45%</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">Women Participation</span>
-                      <span className="font-bold text-accent">68%</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Regional Impact</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {["Gulu", "Arua", "Lira", "Kitgum"].map((region) => (
-                      <div key={region} className="flex justify-between items-center">
-                        <span className="text-sm">{region} District</span>
-                        <div className="flex items-center space-x-2">
-                          <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-primary rounded-full"
-                              style={{ width: `${Math.random() * 80 + 20}%` }}
-                            ></div>
-                          </div>
-                          <span className="text-xs text-muted-foreground">
-                            {Math.floor(Math.random() * 50 + 10)}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
       </div>
+
+      {/* Key Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center">
+              <Users className="h-4 w-4 mr-2 text-primary" />
+              Total Youth
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-primary">{stats.totalYouth}</div>
+            <p className="text-xs text-muted-foreground">Registered users</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center">
+              <MapPin className="h-4 w-4 mr-2 text-accent" />
+              Rural Youth
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-accent">{stats.ruralYouth}</div>
+            <p className="text-xs text-muted-foreground">
+              {stats.totalYouth > 0 ? Math.round((stats.ruralYouth / stats.totalYouth) * 100) : 0}% of total
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">PWD Youth</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-trust">{stats.pwdYouth}</div>
+            <p className="text-xs text-muted-foreground">
+              {stats.totalYouth > 0 ? Math.round((stats.pwdYouth / stats.totalYouth) * 100) : 0}% of total
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Female Youth</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-growth">{stats.femaleYouth}</div>
+            <p className="text-xs text-muted-foreground">
+              {stats.totalYouth > 0 ? Math.round((stats.femaleYouth / stats.totalYouth) * 100) : 0}% of total
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Inclusion Progress */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <TrendingUp className="h-5 w-5 mr-2 text-primary" />
+            Inclusion Progress
+          </CardTitle>
+          <CardDescription>
+            Overall inclusion score across rural, PWD, and female demographics
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Overall Inclusion Score</span>
+              <span className="font-medium">{inclusionPercentage}%</span>
+            </div>
+            <Progress value={inclusionPercentage} className="h-2" />
+          </div>
+          
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div>
+              <p className="text-sm text-muted-foreground">Rural</p>
+              <p className="text-lg font-bold text-accent">
+                {stats.totalYouth > 0 ? Math.round((stats.ruralYouth / stats.totalYouth) * 100) : 0}%
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">PWD</p>
+              <p className="text-lg font-bold text-trust">
+                {stats.totalYouth > 0 ? Math.round((stats.pwdYouth / stats.totalYouth) * 100) : 0}%
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Female</p>
+              <p className="text-lg font-bold text-growth">
+                {stats.totalYouth > 0 ? Math.round((stats.femaleYouth / stats.totalYouth) * 100) : 0}%
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Program Effectiveness */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Job Placements</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-primary">{stats.jobPlacements}</div>
+            <p className="text-xs text-muted-foreground">Successful applications</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Skills Listed</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-accent">{stats.skillsListed}</div>
+            <p className="text-xs text-muted-foreground">Available talents</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Mentorship</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-trust">{stats.mentorshipSessions}</div>
+            <p className="text-xs text-muted-foreground">Questions asked</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">USSD Access</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-growth">{stats.ussdInteractions}</div>
+            <p className="text-xs text-muted-foreground">Basic phone interactions</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Regional Breakdown */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Regional Impact</CardTitle>
+          <CardDescription>
+            Youth engagement across different regions
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {['Arua', 'Yumbe', 'Nebbi', 'Adjumani'].map((region) => {
+              const regionCount = Math.floor(Math.random() * 50) + 20; // Mock data
+              const percentage = Math.round((regionCount / stats.totalYouth) * 100) || 0;
+              
+              return (
+                <div key={region} className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="font-medium">{region}</span>
+                    <span>{regionCount} youth ({percentage}%)</span>
+                  </div>
+                  <Progress value={percentage} className="h-2" />
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Button variant="outline" className="w-full justify-start">
+            <FileDown className="h-4 w-4 mr-2" />
+            Generate Detailed Report
+          </Button>
+          <Button variant="outline" className="w-full justify-start">
+            <Users className="h-4 w-4 mr-2" />
+            View Individual Profiles
+          </Button>
+          <Button variant="outline" className="w-full justify-start">
+            <TrendingUp className="h-4 w-4 mr-2" />
+            Set Impact Targets
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 };
