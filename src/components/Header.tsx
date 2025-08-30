@@ -25,9 +25,9 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">L</span>
+              <span className="text-white font-bold text-lg">K</span>
             </div>
-            <h1 className="text-xl font-bold text-foreground">Luma Link</h1>
+            <h1 className="text-xl font-bold text-foreground">Kwetu Hub</h1>
           </div>
 
           <div className="flex items-center space-x-4">

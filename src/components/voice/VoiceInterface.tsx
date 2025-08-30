@@ -30,12 +30,12 @@ const VoiceInterface = ({ isOpen, onClose }: VoiceInterfaceProps) => {
       // Add welcome message
       setConversation([{
         role: 'assistant',
-        content: 'Hello! I\'m your Luma Link voice assistant. I can help you navigate the app, find jobs, post skills, or answer questions about our platform. How can I help you today?',
+        content: 'Hello! I\'m your Kwetu Hub voice assistant. I can help you navigate the app, find jobs, post skills, or answer questions about our platform. How can I help you today?',
         timestamp: new Date()
       }]);
       
       // Speak welcome message
-      speakText('Hello! I\'m your Luma Link voice assistant. I can help you navigate the app, find jobs, post skills, or answer questions about our platform. How can I help you today?');
+      speakText('Hello! I\'m your Kwetu Hub voice assistant. I can help you navigate the app, find jobs, post skills, or answer questions about our platform. How can I help you today?');
     }
   }, [isOpen]);
 
@@ -145,7 +145,7 @@ const VoiceInterface = ({ isOpen, onClose }: VoiceInterfaceProps) => {
   const getAIResponse = async (userInput: string): Promise<string> => {
     try {
       // Create context about the app
-      const systemPrompt = `You are a helpful voice assistant for Luma Link, a youth employment platform in Uganda. You help users navigate the app and answer questions about:
+      const systemPrompt = `You are a helpful voice assistant for Kwetu Hub, a youth employment platform in Uganda. You help users navigate the app and answer questions about:
 
 1. Finding and applying for jobs
 2. Posting skills and talents

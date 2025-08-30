@@ -43,7 +43,7 @@ const MainApp = () => {
           <User className="h-10 w-10 text-muted-foreground" />
         </div>
         <div>
-          <h2 className="text-xl font-semibold">Welcome to Luma Link</h2>
+          <h2 className="text-xl font-semibold">Welcome to Kwetu Hub</h2>
           <p className="text-muted-foreground">Sign in to access all features</p>
         </div>
         <Button onClick={() => setShowAuth(true)} size="lg">
@@ -59,7 +59,7 @@ const MainApp = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-muted-foreground">Loading Luma Link...</p>
+          <p className="text-muted-foreground">Loading Kwetu Hub...</p>
         </div>
       </div>
     );
@@ -72,9 +72,9 @@ const MainApp = () => {
         <div className="flex items-center justify-between px-4 h-14">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-sm font-bold text-primary-foreground">L</span>
+              <span className="text-sm font-bold text-primary-foreground">K</span>
             </div>
-            <span className="font-bold text-lg text-foreground">Luma Link</span>
+            <span className="font-bold text-lg text-foreground">Kwetu Hub</span>
           </div>
           
           {!user && (

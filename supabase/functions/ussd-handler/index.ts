@@ -31,7 +31,7 @@ const resolveUserIdByPhone = async (phone: string) => {
 
 const generateUSSDMenu = (step: string, userInput?: string): string => {
   const menus = {
-    main: `CON Welcome to Luma Link
+    main: `CON Welcome to Kwetu Hub
 1. View Jobs
 2. Post Job (Employers)
 3. My Skills

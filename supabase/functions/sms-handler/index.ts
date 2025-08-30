@@ -125,13 +125,13 @@ serve(async (req) => {
     }
     // Help and information
     else if (message === 'HELP' || message === 'INFO') {
-      response = `Luma Link SMS Commands:
+      response = `Kwetu Hub SMS Commands:
 JOB Title|Location|Salary|Description - Post a job
 SKILL Name|Category|Rate|Description - List your skill
 APPLY [JobID] - Apply for a job
 JOBS - See recent jobs
 STATUS - Check your activity
-Visit lumalink.app for full features!`;
+Visit kwetuhub.app for full features!`;
     }
     // List recent jobs
     else if (message === 'JOBS') {
@@ -154,11 +154,11 @@ Visit lumalink.app for full features!`;
     }
     // Status check
     else if (message === 'STATUS') {
-      response = 'To check your full status and manage your profile, visit lumalink.app and verify your phone number.';
+      response = 'To check your full status and manage your profile, visit kwetuhub.app and verify your phone number.';
     }
     // Default response
     else {
-      response = 'Welcome to Luma Link! SMS HELP for commands or visit lumalink.app for full features.';
+      response = 'Welcome to Kwetu Hub! SMS HELP for commands or visit kwetuhub.app for full features.';
     }
 
     // Log the SMS interaction

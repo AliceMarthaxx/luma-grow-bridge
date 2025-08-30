@@ -63,7 +63,7 @@ const AuthForm = ({ onClose }: AuthFormProps) => {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>{isSignUp ? 'Join Luma Link' : 'Welcome Back'}</CardTitle>
+        <CardTitle>{isSignUp ? 'Join Kwetu Hub' : 'Welcome Back'}</CardTitle>
         <CardDescription>
           {isSignUp ? 'Create your account to access opportunities' : 'Sign in to your account'}
         </CardDescription>

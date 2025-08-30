@@ -24,7 +24,7 @@ serve(async (req) => {
     const messages = [
       {
         role: 'system',
-        content: systemPrompt || 'You are a helpful assistant for Luma Link, a youth employment platform.'
+        content: systemPrompt || 'You are a helpful assistant for Kwetu Hub, a youth employment platform.'
       }
     ];
 
