@@ -22,11 +22,11 @@ const Index = () => {
   }
 
   if (selectedUserType === "ngo") {
-    return <NGODashboard onBack={() => setSelectedUserType(null)} />;
+    return <NGODashboard />;
   }
 
   if (selectedUserType === "government") {
-    return <GovernmentDashboard onBack={() => setSelectedUserType(null)} />;
+    return <GovernmentDashboard />;
   }
 
   return (

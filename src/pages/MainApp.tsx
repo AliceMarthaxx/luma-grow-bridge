@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { User, LogIn } from 'lucide-react';
+import { User, LogIn, MessageCircle } from 'lucide-react';
 import BottomNav from '@/components/navigation/BottomNav';
 import JobsBoard from '@/components/jobs/JobsBoard';
 import SkillsMarketplace from '@/components/skills/SkillsMarketplace';
@@ -9,11 +9,13 @@ import MentorshipWall from '@/components/mentorship/MentorshipWall';
 import LearningHub from '@/components/learning/LearningHub';
 import UserProfile from '@/components/profile/UserProfile';
 import AuthForm from '@/components/auth/AuthForm';
+import VoiceInterface from '@/components/voice/VoiceInterface';
 import { useAuth } from '@/hooks/useAuth';
 
 const MainApp = () => {
   const [activeTab, setActiveTab] = useState('jobs');
   const [showAuth, setShowAuth] = useState(false);
+  const [showVoiceInterface, setShowVoiceInterface] = useState(false);
   
   const { user, loading } = useAuth();
 
@@ -96,12 +98,27 @@ const MainApp = () => {
       {/* Bottom Navigation */}
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
 
+      {/* Voice Assistant Button */}
+      <Button
+        size="lg"
+        className="fixed bottom-20 right-4 rounded-full h-14 w-14 shadow-lg z-50"
+        onClick={() => setShowVoiceInterface(true)}
+      >
+        <MessageCircle className="h-6 w-6" />
+      </Button>
+
       {/* Auth Dialog */}
       <Dialog open={showAuth} onOpenChange={setShowAuth}>
         <DialogContent className="sm:max-w-md">
           <AuthForm onClose={() => setShowAuth(false)} />
         </DialogContent>
       </Dialog>
+
+      {/* Voice Interface Modal */}
+      <VoiceInterface 
+        isOpen={showVoiceInterface} 
+        onClose={() => setShowVoiceInterface(false)} 
+      />
     </div>
   );
 };
