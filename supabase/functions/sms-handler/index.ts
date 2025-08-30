@@ -18,6 +18,18 @@ interface SMSRequest {
   messageId?: string;
 }
 
+const resolveUserIdByPhone = async (phone: string) => {
+  const { data, error } = await supabase
+    .from('phone_user_mapping')
+    .select('user_id')
+    .eq('phone_number', phone)
+    .maybeSingle();
+  if (error) {
+    console.error('Phone mapping lookup error:', error);
+  }
+  return (data?.user_id as string) || null;
+};
+
 const parseJobPosting = (text: string) => {
   // Format: JOB Title|Location|Salary|Description
   const parts = text.substring(4).split('|'); // Remove "JOB " prefix
@@ -76,16 +88,22 @@ serve(async (req) => {
     if (message.startsWith('JOB ')) {
       const jobData = parseJobPosting(message);
       if (jobData) {
-        const { error } = await supabase
-          .from('opportunities')
-          .insert({
-            ...jobData,
-            contact_info: phoneNumber
-          });
+        const employerId = await resolveUserIdByPhone(phoneNumber);
+        if (!employerId) {
+          response = 'Please register at lumalink.app and verify your phone to post jobs via SMS.';
+        } else {
+          const { error } = await supabase
+            .from('opportunities')
+            .insert({
+              ...jobData,
+              contact_info: phoneNumber,
+              employer_id: employerId
+            });
 
-        response = error 
-          ? 'Error posting job. Please check format: JOB Title|Location|Salary|Description'
-          : 'Job posted successfully! ID: ' + Math.random().toString(36).substr(2, 9).toUpperCase();
+          response = error 
+            ? 'Error posting job. Please check format: JOB Title|Location|Salary|Description'
+            : 'Job posted successfully!';
+        }
       } else {
         response = 'Invalid job format. Use: JOB Title|Location|Salary|Description\nExample: JOB Cook|Arua|40000|Restaurant cook needed';
       }

@@ -165,7 +165,7 @@ export type Database = {
           created_at: string | null
           deadline: string | null
           description: string
-          employer_id: string | null
+          employer_id: string
           id: string
           is_remote: boolean | null
           location: string | null
@@ -185,7 +185,7 @@ export type Database = {
           created_at?: string | null
           deadline?: string | null
           description: string
-          employer_id?: string | null
+          employer_id: string
           id?: string
           is_remote?: boolean | null
           location?: string | null
@@ -205,7 +205,7 @@ export type Database = {
           created_at?: string | null
           deadline?: string | null
           description?: string
-          employer_id?: string | null
+          employer_id?: string
           id?: string
           is_remote?: boolean | null
           location?: string | null
@@ -217,6 +217,30 @@ export type Database = {
           title?: string
           type?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      phone_user_mapping: {
+        Row: {
+          created_at: string
+          id: string
+          phone_number: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          phone_number: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          phone_number?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

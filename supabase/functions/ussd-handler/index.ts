@@ -17,6 +17,18 @@ interface USSDRequest {
   text: string;
 }
 
+const resolveUserIdByPhone = async (phone: string) => {
+  const { data, error } = await supabase
+    .from('phone_user_mapping')
+    .select('user_id')
+    .eq('phone_number', phone)
+    .maybeSingle();
+  if (error) {
+    console.error('Phone mapping lookup error:', error);
+  }
+  return (data?.user_id as string) || null;
+};
+
 const generateUSSDMenu = (step: string, userInput?: string): string => {
   const menus = {
     main: `CON Welcome to Luma Link
@@ -124,22 +136,26 @@ serve(async (req) => {
       const jobDetails = lastInput.split('|');
       if (jobDetails.length === 4) {
         const [title, location, salary, description] = jobDetails;
-        
-        // Create job opportunity
-        const { error } = await supabase.from('opportunities').insert({
-          title,
-          location,
-          salary_min: parseInt(salary),
-          description,
-          type: 'job',
-          status: 'active',
-          contact_method: 'sms',
-          contact_info: phoneNumber
-        });
+        const employerId = await resolveUserIdByPhone(phoneNumber);
+        if (!employerId) {
+          response = 'END Please register at lumalink.app and verify your phone to post jobs.';
+        } else {
+          const { error } = await supabase.from('opportunities').insert({
+            title,
+            location,
+            salary_min: parseInt(salary),
+            description,
+            type: 'job',
+            status: 'active',
+            contact_method: 'sms',
+            contact_info: phoneNumber,
+            employer_id: employerId
+          });
 
-        response = error 
-          ? 'END Error posting job. Please try again.'
-          : 'END Job posted successfully! Candidates will contact you via SMS.';
+          response = error 
+            ? 'END Error posting job. Please try again.'
+            : 'END Job posted successfully! Candidates will contact you via SMS.';
+        }
       } else {
         response = 'END Invalid format. Use: Title|Location|Salary|Description';
       }
@@ -166,15 +182,19 @@ serve(async (req) => {
     else if (text.startsWith('4*')) {
       const question = lastInput;
       if (question.length > 10) {
-        // Store question
-        await supabase.from('mentorship_sessions').insert({
-          question,
-          status: 'open',
-          is_public: true,
-          category: 'general'
-        });
-        
-        response = 'END Question submitted! Check our website or SMS for answers from mentors.';
+        const menteeId = await resolveUserIdByPhone(phoneNumber);
+        if (!menteeId) {
+          response = 'END Please register at lumalink.app and verify your phone to ask questions.';
+        } else {
+          await supabase.from('mentorship_sessions').insert({
+            question,
+            status: 'open',
+            is_public: true,
+            category: 'general',
+            mentee_id: menteeId
+          });
+          response = 'END Question submitted! Check our website or SMS for answers from mentors.';
+        }
       } else {
         response = 'END Please enter a longer question (minimum 10 characters).';
       }
