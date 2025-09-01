@@ -54,7 +54,7 @@ const Index = () => {
               offline-first technology and multi-language support
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" variant="hero" className="text-lg px-8 py-4" onClick={() => navigate('/app')}>
+              <Button size="lg" variant="hero" className="text-lg px-8 py-4" onClick={() => navigate('/auth')}>
                 Get Started
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -225,7 +225,7 @@ const Index = () => {
             Join thousands of rural youth accessing entrepreneurship opportunities across Northern Uganda
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary" className="text-lg px-8 py-4" onClick={() => navigate('/app')}>
+            <Button size="lg" variant="secondary" className="text-lg px-8 py-4" onClick={() => navigate('/auth')}>
               Start Your Journey
             </Button>
             <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary">
