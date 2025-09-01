@@ -2,7 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Mic, MicOff, Volume2, VolumeX, MessageCircle, X, Loader2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Mic, MicOff, Volume2, VolumeX, MessageCircle, X, Loader2, Globe } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -11,10 +12,70 @@ interface VoiceInterfaceProps {
   onClose: () => void;
 }
 
+interface Language {
+  code: string;
+  name: string;
+  voice: string;
+  systemPrompt: string;
+}
+
+const languages: Language[] = [
+  {
+    code: 'en',
+    name: 'English',
+    voice: 'alloy',
+    systemPrompt: `You are a helpful voice assistant for Kwetu Hub, a youth employment platform in Uganda. You help users navigate the app and answer questions about:
+
+1. Finding and applying for jobs
+2. Posting skills and talents
+3. Asking mentorship questions
+4. Learning business skills
+5. Understanding the platform features
+
+The app has these main sections:
+- Jobs: Browse opportunities, apply for positions
+- Skills: Post your talents, set rates, show availability
+- Mentorship: Ask questions, get advice from experienced people
+- Learning: Business courses, idea validation, planning tools
+- Profile: Manage your information, view activity
+
+Keep responses concise, helpful, and encouraging. Speak in a friendly, supportive tone.`
+  },
+  {
+    code: 'lg',
+    name: 'Lugbara',
+    voice: 'echo',
+    systemPrompt: `You are a helpful voice assistant for Kwetu Hub in Lugbara language. Kwetu Hub ni bisnis platform alu aniyo ku youth ya Uganda. Speak primarily in Lugbara but include English terms for technical features. Help users with:
+
+1. Jobs (Adongo): Finding work opportunities
+2. Skills (Opi): Showing your talents and abilities  
+3. Mentorship (Ayoyo): Getting advice from experienced people
+4. Learning (Eristu): Business education and skills
+5. Profile: Managing your information
+
+Always be encouraging and speak with respect. Mix Lugbara with English for technical terms users understand.`
+  },
+  {
+    code: 'alr',
+    name: 'Alur',
+    voice: 'shimmer',
+    systemPrompt: `You are a helpful voice assistant for Kwetu Hub in Alur language. Kwetu Hub e platform me bisnis pa lwongo youth ma i Uganda. Speak primarily in Alur but include English terms for app features. Help users with:
+
+1. Jobs (Tic): Finding work opportunities
+2. Skills (Neno): Showing your talents and abilities
+3. Mentorship (Pwonyo): Getting advice from experienced people  
+4. Learning (Nongo): Business education and skills
+5. Profile: Managing your information
+
+Always encourage users and speak respectfully. Mix Alur with English for technical app terms.`
+  }
+];
+
 const VoiceInterface = ({ isOpen, onClose }: VoiceInterfaceProps) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>(languages[0]);
   const [conversation, setConversation] = useState<Array<{
     role: 'user' | 'assistant';
     content: string;
@@ -27,17 +88,30 @@ const VoiceInterface = ({ isOpen, onClose }: VoiceInterfaceProps) => {
 
   useEffect(() => {
     if (isOpen && conversation.length === 0) {
-      // Add welcome message
-      setConversation([{
-        role: 'assistant',
-        content: 'Hello! I\'m your Kwetu Hub voice assistant. I can help you navigate the app, find jobs, post skills, or answer questions about our platform. How can I help you today?',
-        timestamp: new Date()
-      }]);
-      
-      // Speak welcome message
-      speakText('Hello! I\'m your Kwetu Hub voice assistant. I can help you navigate the app, find jobs, post skills, or answer questions about our platform. How can I help you today?');
+      initializeWelcomeMessage();
     }
-  }, [isOpen]);
+  }, [isOpen, selectedLanguage]);
+
+  const getWelcomeMessage = () => {
+    switch (selectedLanguage.code) {
+      case 'lg':
+        return 'Aya! A ni voice assistant pa Kwetu Hub. A rua azi ayiko ku app-ni, riyo jobs, ma skills ani, na ani questions ku platform-ni. Enzi rua azi muni aya?';
+      case 'alr':
+        return 'Apwoyo! An voice assistant pa Kwetu Hub. Aromo kony i ki app-no, nong tic, keto neno-ni, kadi lagoro lok ki platform-wa. Ere aromo kony-i kwini?';
+      default:
+        return 'Hello! I\'m your Kwetu Hub voice assistant. I can help you navigate the app, find jobs, post skills, or answer questions about our platform. How can I help you today?';
+    }
+  };
+
+  const initializeWelcomeMessage = () => {
+    const welcomeText = getWelcomeMessage();
+    setConversation([{
+      role: 'assistant',
+      content: welcomeText,
+      timestamp: new Date()
+    }]);
+    speakText(welcomeText);
+  };
 
   const startRecording = async () => {
     try {
@@ -97,9 +171,12 @@ const VoiceInterface = ({ isOpen, onClose }: VoiceInterfaceProps) => {
       const arrayBuffer = await audioBlob.arrayBuffer();
       const base64Audio = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
       
-      // Send to speech-to-text service
+      // Send to speech-to-text service with language
       const { data: transcriptionData, error: transcriptionError } = await supabase.functions.invoke('voice-to-text', {
-        body: { audio: base64Audio }
+        body: { 
+          audio: base64Audio,
+          language: selectedLanguage.code
+        }
       });
       
       if (transcriptionError) throw transcriptionError;
@@ -144,28 +221,10 @@ const VoiceInterface = ({ isOpen, onClose }: VoiceInterfaceProps) => {
 
   const getAIResponse = async (userInput: string): Promise<string> => {
     try {
-      // Create context about the app
-      const systemPrompt = `You are a helpful voice assistant for Kwetu Hub, a youth employment platform in Uganda. You help users navigate the app and answer questions about:
-
-1. Finding and applying for jobs
-2. Posting skills and talents
-3. Asking mentorship questions
-4. Learning business skills
-5. Understanding the platform features
-
-The app has these main sections:
-- Jobs: Browse opportunities, apply for positions
-- Skills: Post your talents, set rates, show availability
-- Mentorship: Ask questions, get advice from experienced people
-- Learning: Business courses, idea validation, planning tools
-- Profile: Manage your information, view activity
-
-Keep responses concise, helpful, and encouraging. Speak in a friendly, supportive tone. If users need specific navigation help, guide them to the relevant tab or feature.`;
-
       const { data, error } = await supabase.functions.invoke('chat-with-ai', {
         body: {
           message: userInput,
-          systemPrompt,
+          systemPrompt: selectedLanguage.systemPrompt,
           conversationHistory: conversation.slice(-4) // Last 4 messages for context
         }
       });
@@ -186,7 +245,8 @@ Keep responses concise, helpful, and encouraging. Speak in a friendly, supportiv
       const { data, error } = await supabase.functions.invoke('text-to-speech', {
         body: { 
           text, 
-          voice: 'alloy' // Using a friendly voice
+          voice: selectedLanguage.voice,
+          language: selectedLanguage.code
         }
       });
 
@@ -212,6 +272,7 @@ Keep responses concise, helpful, and encouraging. Speak in a friendly, supportiv
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 0.9;
         utterance.pitch = 1;
+        utterance.lang = selectedLanguage.code === 'en' ? 'en-US' : selectedLanguage.code;
         utterance.onend = () => setIsPlaying(false);
         speechSynthesis.speak(utterance);
       }
@@ -219,9 +280,10 @@ Keep responses concise, helpful, and encouraging. Speak in a friendly, supportiv
   };
 
   const clearConversation = () => {
+    const welcomeText = getWelcomeMessage();
     setConversation([{
       role: 'assistant',
-      content: 'How can I help you today?',
+      content: welcomeText,
       timestamp: new Date()
     }]);
   };
@@ -245,6 +307,32 @@ Keep responses concise, helpful, and encouraging. Speak in a friendly, supportiv
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="h-4 w-4" />
             </Button>
+          </div>
+          
+          {/* Language Selector */}
+          <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
+            <div className="flex items-center space-x-2">
+              <Globe className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">Language</span>
+            </div>
+            <Select 
+              value={selectedLanguage.code} 
+              onValueChange={(value) => {
+                const lang = languages.find(l => l.code === value) || languages[0];
+                setSelectedLanguage(lang);
+              }}
+            >
+              <SelectTrigger className="w-32 h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {languages.map((lang) => (
+                  <SelectItem key={lang.code} value={lang.code}>
+                    {lang.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </CardHeader>
 
