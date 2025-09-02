@@ -78,7 +78,10 @@ const YouthDashboard = ({ onBack }: YouthDashboardProps) => {
             </div>
           </div>
           <div className="flex gap-3">
-            <Button variant="hero">
+            <Button 
+              variant="hero"
+              onClick={() => window.location.href = '/activities'}
+            >
               <Target className="h-4 w-4 mr-2" />
               Activities & Skills
             </Button>

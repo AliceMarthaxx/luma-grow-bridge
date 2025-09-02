@@ -12,6 +12,7 @@ import PartnerPage from "./pages/PartnerPage";
 import YouthDashboard from "./pages/YouthDashboard";
 import NGODashboard from "./pages/NGODashboard";
 import GovernmentDashboard from "./pages/GovernmentDashboard";
+import ActivitiesPage from "./pages/ActivitiesPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/about" element={<AboutPage />} />
             <Route path="/partner" element={<PartnerPage />} />
             <Route path="/youth" element={<YouthDashboard onBack={() => window.location.href = '/'} />} />
+            <Route path="/activities" element={<ActivitiesPage onBack={() => window.history.back()} />} />
             <Route path="/ngo" element={<NGODashboard />} />
             <Route path="/government" element={<GovernmentDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
