@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, Search, Filter, MessageCircle, Mic, BookOpen, Briefcase } from "lucide-react";
+import { ArrowLeft, Search, Filter, MessageCircle, Mic, BookOpen, Briefcase, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -77,10 +77,16 @@ const YouthDashboard = ({ onBack }: YouthDashboardProps) => {
               <p className="text-muted-foreground">Discover opportunities to grow your future</p>
             </div>
           </div>
-          <Button variant="accent">
-            <MessageCircle className="h-4 w-4 mr-2" />
-            Mentorship
-          </Button>
+          <div className="flex gap-3">
+            <Button variant="hero">
+              <Target className="h-4 w-4 mr-2" />
+              Activities & Skills
+            </Button>
+            <Button variant="accent">
+              <MessageCircle className="h-4 w-4 mr-2" />
+              Mentorship
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
