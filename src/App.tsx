@@ -9,6 +9,9 @@ import MainApp from "./pages/MainApp";
 import AuthPage from "./pages/AuthPage";
 import AboutPage from "./pages/AboutPage";
 import PartnerPage from "./pages/PartnerPage";
+import YouthDashboard from "./pages/YouthDashboard";
+import NGODashboard from "./pages/NGODashboard";
+import GovernmentDashboard from "./pages/GovernmentDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +29,9 @@ const App = () => (
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/partner" element={<PartnerPage />} />
+            <Route path="/youth" element={<YouthDashboard onBack={() => window.location.href = '/'} />} />
+            <Route path="/ngo" element={<NGODashboard />} />
+            <Route path="/government" element={<GovernmentDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
