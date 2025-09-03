@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import Header from "@/components/Header";
 import UserTypeCard from "@/components/UserTypeCard";
+import ChatBot from "@/components/ChatBot";
 import YouthDashboard from "./YouthDashboard";
 import NGODashboard from "./NGODashboard";
 import GovernmentDashboard from "./GovernmentDashboard";
@@ -251,6 +252,7 @@ const Index = () => {
           </div>
         </div>
       </footer>
+      <ChatBot />
     </div>
   );
 };
