@@ -6,6 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageCircle, Send, X, Bot, User } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Message {
   id: string;
@@ -16,18 +17,22 @@ interface Message {
 
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: 'Hi! I\'m here to help you learn about Kwetu Hub\'s services. You can ask me about job opportunities, skills development, mentorship programs, or any other services we offer.',
-      timestamp: new Date()
-    }
-  ]);
+  const { t } = useLanguage();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  // Initialize with greeting message
+  useEffect(() => {
+    setMessages([{
+      id: '1',
+      role: 'assistant',
+      content: t('chatbot.greeting'),
+      timestamp: new Date()
+    }]);
+  }, [t]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -77,7 +82,7 @@ Answer questions about these services in a friendly, informative way. If asked a
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.response || 'I apologize, but I\'m having trouble responding right now. Please try again.',
+        content: data.response || t('chatbot.error'),
         timestamp: new Date()
       };
 
@@ -85,15 +90,15 @@ Answer questions about these services in a friendly, informative way. If asked a
     } catch (error) {
       console.error('Chat error:', error);
       toast({
-        title: "Chat Error",
-        description: "Failed to get response. Please try again.",
+        title: t('error'),
+        description: t('chatbot.error'),
         variant: "destructive",
       });
       
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'I\'m sorry, I\'m having trouble right now. Please try asking again or explore our services using the navigation menu.',
+        content: t('chatbot.offline'),
         timestamp: new Date()
       };
       
@@ -127,7 +132,7 @@ Answer questions about these services in a friendly, informative way. If asked a
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 bg-primary text-primary-foreground rounded-t-lg">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <Bot className="h-5 w-5" />
-          Kwetu Assistant
+          {t('chatbot.title')}
         </CardTitle>
         <Button
           variant="ghost"
@@ -189,7 +194,7 @@ Answer questions about these services in a friendly, informative way. If asked a
         <div className="border-t p-4">
           <div className="flex gap-2">
             <Textarea
-              placeholder="Ask about our services..."
+              placeholder={t('chatbot.placeholder')}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyPress={handleKeyPress}
