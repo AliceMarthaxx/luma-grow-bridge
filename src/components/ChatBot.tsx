@@ -139,9 +139,9 @@ Answer questions about these services in a friendly, informative way. If asked a
         </Button>
       </CardHeader>
       
-      <CardContent className="flex-1 flex flex-col p-0">
-        <ScrollArea className="flex-1 p-4">
-          <div className="space-y-4">
+      <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
+        <ScrollArea className="flex-1 h-0 p-4">
+          <div className="space-y-4 min-h-full">
             {messages.map((message) => (
               <div
                 key={message.id}
