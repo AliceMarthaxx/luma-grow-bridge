@@ -123,7 +123,7 @@ Answer questions about these services in a friendly, informative way. If asked a
   }
 
   return (
-    <Card className="fixed bottom-6 right-6 w-96 h-[500px] shadow-strong z-50 flex flex-col">
+    <Card className="fixed bottom-4 right-4 w-[90vw] max-w-96 h-[70vh] max-h-[500px] md:bottom-6 md:right-6 md:w-96 md:h-[500px] shadow-strong z-50 flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 bg-primary text-primary-foreground rounded-t-lg">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <Bot className="h-5 w-5" />
