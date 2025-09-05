@@ -10,6 +10,7 @@ import LearningHub from '@/components/learning/LearningHub';
 import UserProfile from '@/components/profile/UserProfile';
 import AuthForm from '@/components/auth/AuthForm';
 import VoiceInterface from '@/components/voice/VoiceInterface';
+import USSDSimulator from '@/components/ussd/USSDSimulator';
 import { useAuth } from '@/hooks/useAuth';
 
 const MainApp = () => {
@@ -119,6 +120,9 @@ const MainApp = () => {
         isOpen={showVoiceInterface} 
         onClose={() => setShowVoiceInterface(false)} 
       />
+      
+      {/* USSD Simulator */}
+      <USSDSimulator />
     </div>
   );
 };
