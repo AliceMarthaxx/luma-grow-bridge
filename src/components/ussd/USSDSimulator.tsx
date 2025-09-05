@@ -268,7 +268,7 @@ ${t('location')}: ${userData?.location}
     <>
       <Button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-20 right-4 z-50 rounded-full h-12 w-12 bg-primary hover:bg-primary/90"
+        className="fixed bottom-20 left-4 z-50 rounded-full h-12 w-12 bg-primary hover:bg-primary/90"
         size="icon"
       >
         <Phone className="h-6 w-6" />
