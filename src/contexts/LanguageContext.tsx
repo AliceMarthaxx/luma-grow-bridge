@@ -156,6 +156,8 @@ const translations: Record<Language, Record<string, string>> = {
     'user': 'User',
     'send': 'Send',
     'thankYou': 'Thank you',
+    'askQuestion': 'Ask Question',
+    'myProfile': 'My Profile',
   },
   
   lg: {
@@ -302,6 +304,8 @@ const translations: Record<Language, Record<string, string>> = {
     'user': 'Onzi',
     'send': 'Tua',
     'thankYou': 'Vua alu',
+    'askQuestion': 'Penyo Eju',
+    'myProfile': 'Ama Profile',
   },
   
   al: {
@@ -448,6 +452,8 @@ const translations: Record<Language, Record<string, string>> = {
     'user': 'Lutino',
     'send': 'Cwal',
     'thankYou': 'Apwoyo',
+    'askQuestion': 'Penj Penyo',
+    'myProfile': 'Profile Mamegi',
   },
 };
 
