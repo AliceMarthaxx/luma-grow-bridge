@@ -10,6 +10,7 @@ import ChatBot from "@/components/ChatBot";
 import YouthDashboard from "./YouthDashboard";
 import NGODashboard from "./NGODashboard";
 import GovernmentDashboard from "./GovernmentDashboard";
+import USSDSimulator from "@/components/ussd/USSDSimulator";
 import heroImage from "@/assets/hero-image.jpg";
 
 type UserType = "youth" | "ngo" | "government" | null;
@@ -253,6 +254,7 @@ const Index = () => {
         </div>
       </footer>
       <ChatBot />
+      <USSDSimulator />
     </div>
   );
 };

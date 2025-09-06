@@ -80,6 +80,13 @@ const YouthDashboard = ({ onBack }: YouthDashboardProps) => {
           <div className="flex gap-3">
             <Button 
               variant="hero"
+              onClick={() => window.location.href = '/app'}
+            >
+              <Briefcase className="h-4 w-4 mr-2" />
+              Full Platform
+            </Button>
+            <Button 
+              variant="hero"
               onClick={() => window.location.href = '/activities'}
             >
               <Target className="h-4 w-4 mr-2" />
