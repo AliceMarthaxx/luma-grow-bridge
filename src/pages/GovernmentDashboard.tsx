@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart3, Users, TrendingUp, MapPin, Calendar, FileDown, Filter, Globe, Smartphone } from 'lucide-react';
+import { BarChart3, Users, TrendingUp, MapPin, Calendar, FileDown, Filter, Globe, Smartphone, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -125,9 +125,15 @@ const GovernmentDashboard = () => {
     <div className="p-4 pb-20 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Government Dashboard</h1>
-          <p className="text-muted-foreground">National youth development monitoring</p>
+        <div className="flex items-center space-x-3">
+          <Button variant="ghost" onClick={() => window.location.href = '/'}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Home
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Government Dashboard</h1>
+            <p className="text-muted-foreground">National youth development monitoring</p>
+          </div>
         </div>
         
         <div className="flex flex-wrap gap-2">
