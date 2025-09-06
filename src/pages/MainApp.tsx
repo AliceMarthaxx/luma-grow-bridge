@@ -8,7 +8,7 @@ import SkillsMarketplace from '@/components/skills/SkillsMarketplace';
 import MentorshipWall from '@/components/mentorship/MentorshipWall';
 import LearningHub from '@/components/learning/LearningHub';
 import UserProfile from '@/components/profile/UserProfile';
-import AuthForm from '@/components/auth/AuthForm';
+import USSDAuthForm from '@/components/auth/USSDAuthForm';
 import VoiceInterface from '@/components/voice/VoiceInterface';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -110,7 +110,7 @@ const MainApp = () => {
       {/* Auth Dialog */}
       <Dialog open={showAuth} onOpenChange={setShowAuth}>
         <DialogContent className="sm:max-w-md">
-          <AuthForm onClose={() => setShowAuth(false)} />
+          <USSDAuthForm onClose={() => setShowAuth(false)} />
         </DialogContent>
       </Dialog>
 

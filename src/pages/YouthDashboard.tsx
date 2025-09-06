@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { ArrowLeft, Search, Filter, MessageCircle, Mic, BookOpen, Briefcase, Target } from "lucide-react";
+import { ArrowLeft, Search, Filter, MessageCircle, Mic, BookOpen, Briefcase, Target, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Header from "@/components/Header";
 import OpportunityCard from "@/components/OpportunityCard";
+import USSDAuthForm from "@/components/auth/USSDAuthForm";
+import { useAuth } from "@/hooks/useAuth";
 
 interface YouthDashboardProps {
   onBack: () => void;
@@ -14,6 +17,8 @@ interface YouthDashboardProps {
 const YouthDashboard = ({ onBack }: YouthDashboardProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
+  const [showAuth, setShowAuth] = useState(false);
+  const { user } = useAuth();
 
   const opportunities = [
     {
@@ -78,13 +83,23 @@ const YouthDashboard = ({ onBack }: YouthDashboardProps) => {
             </div>
           </div>
           <div className="flex gap-3">
-            <Button 
-              variant="hero"
-              onClick={() => window.location.href = '/app'}
-            >
-              <Briefcase className="h-4 w-4 mr-2" />
-              Full Platform
-            </Button>
+            {user ? (
+              <Button 
+                variant="hero"
+                onClick={() => window.location.href = '/app'}
+              >
+                <Briefcase className="h-4 w-4 mr-2" />
+                Full Platform
+              </Button>
+            ) : (
+              <Button 
+                variant="hero"
+                onClick={() => setShowAuth(true)}
+              >
+                <LogIn className="h-4 w-4 mr-2" />
+                Sign In for Full Access
+              </Button>
+            )}
             <Button 
               variant="hero"
               onClick={() => window.location.href = '/activities'}
@@ -242,6 +257,13 @@ const YouthDashboard = ({ onBack }: YouthDashboardProps) => {
           </div>
         </div>
       </div>
+
+      {/* Auth Dialog */}
+      <Dialog open={showAuth} onOpenChange={setShowAuth}>
+        <DialogContent className="sm:max-w-md">
+          <USSDAuthForm onClose={() => setShowAuth(false)} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

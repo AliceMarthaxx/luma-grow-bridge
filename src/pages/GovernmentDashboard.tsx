@@ -5,10 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart3, Users, TrendingUp, MapPin, Calendar, FileDown, Filter, Globe, Smartphone, ArrowLeft } from 'lucide-react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { BarChart3, Users, TrendingUp, MapPin, Calendar, FileDown, Filter, Globe, Smartphone, ArrowLeft, LogIn } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import USSDAuthForm from '@/components/auth/USSDAuthForm';
 
 interface PolicyMetric {
   category: string;
@@ -18,6 +20,7 @@ interface PolicyMetric {
 }
 
 const GovernmentDashboard = () => {
+  const [showAuth, setShowAuth] = useState(false);
   const [policyMetrics, setPolicyMetrics] = useState<PolicyMetric[]>([
     { category: 'Youth Employment', target: 75, current: 68, trend: 'up' },
     { category: 'Rural Inclusion', target: 60, current: 45, trend: 'up' },
@@ -134,6 +137,15 @@ const GovernmentDashboard = () => {
             <h1 className="text-2xl font-bold text-foreground">Government Dashboard</h1>
             <p className="text-muted-foreground">National youth development monitoring</p>
           </div>
+          {!user && (
+            <Button 
+              variant="hero"
+              onClick={() => setShowAuth(true)}
+            >
+              <LogIn className="h-4 w-4 mr-2" />
+              Sign In for Full Access
+            </Button>
+          )}
         </div>
         
         <div className="flex flex-wrap gap-2">
@@ -402,6 +414,13 @@ const GovernmentDashboard = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Auth Dialog */}
+      <Dialog open={showAuth} onOpenChange={setShowAuth}>
+        <DialogContent className="sm:max-w-md">
+          <USSDAuthForm onClose={() => setShowAuth(false)} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
