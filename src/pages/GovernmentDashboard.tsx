@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { BarChart3, Users, TrendingUp, MapPin, Calendar, FileDown, Filter, Globe, Smartphone, ArrowLeft, LogIn } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import USSDAuthForm from '@/components/auth/USSDAuthForm';
@@ -42,6 +43,7 @@ const GovernmentDashboard = () => {
 
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (user) {
@@ -131,11 +133,11 @@ const GovernmentDashboard = () => {
         <div className="flex items-center space-x-3">
           <Button variant="ghost" onClick={() => window.location.href = '/'}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Home
+            {t('backToHome')}
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Government Dashboard</h1>
-            <p className="text-muted-foreground">National youth development monitoring</p>
+            <h1 className="text-2xl font-bold text-foreground">{t('governmentDashboard')}</h1>
+            <p className="text-muted-foreground">{t('nationalYouthDevelopment')}</p>
           </div>
           {!user && (
             <Button 
@@ -143,7 +145,7 @@ const GovernmentDashboard = () => {
               onClick={() => setShowAuth(true)}
             >
               <LogIn className="h-4 w-4 mr-2" />
-              Sign In for Full Access
+              {t('signInForFullAccess')}
             </Button>
           )}
         </div>

@@ -3,6 +3,7 @@ import { Users, Building, BarChart3, ArrowRight, Smartphone, Globe, MessageSquar
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Badge } from "@/components/ui/badge";
 import Header from "@/components/Header";
 import UserTypeCard from "@/components/UserTypeCard";
@@ -18,6 +19,7 @@ type UserType = "youth" | "ngo" | "government" | null;
 const Index = () => {
   const [selectedUserType, setSelectedUserType] = useState<UserType>(null);
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   if (selectedUserType === "youth") {
     return <YouthDashboard onBack={() => setSelectedUserType(null)} />;
@@ -48,20 +50,19 @@ const Index = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center text-white">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Bridging Rural Youth to
-              <span className="block text-accent-light">Entrepreneurship</span>
+              {t('bridgingRuralYouth')}
+              <span className="block text-accent-light">{t('entrepreneurship')}</span>
             </h1>
             <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">
-              Connecting opportunities, mentorship, and skills across Northern Uganda through 
-              offline-first technology and multi-language support
+              {t('connectingOpportunities')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" variant="hero" className="text-lg px-8 py-4" onClick={() => navigate('/auth')}>
-                Get Started
+                {t('getStarted')}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary" onClick={() => navigate('/about')}>
-                Learn More
+                {t('learnMore')}
               </Button>
             </div>
           </div>
@@ -134,10 +135,10 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-foreground mb-4">
-              Choose Your Dashboard
+              {t('chooseYourDashboard')}
             </h2>
             <p className="text-xl text-muted-foreground">
-              Select your role to access tailored features and opportunities
+              {t('selectYourRole')}
             </p>
           </div>
           

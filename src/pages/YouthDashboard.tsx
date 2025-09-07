@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, Search, Filter, MessageCircle, Mic, BookOpen, Briefcase, Target, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,7 @@ const YouthDashboard = ({ onBack }: YouthDashboardProps) => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [showAuth, setShowAuth] = useState(false);
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   const opportunities = [
     {
@@ -75,11 +77,11 @@ const YouthDashboard = ({ onBack }: YouthDashboardProps) => {
           <div className="flex items-center space-x-3">
             <Button variant="ghost" onClick={() => window.location.href = '/'}>
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
+              {t('backToHome')}
             </Button>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Youth Dashboard</h1>
-              <p className="text-muted-foreground">Discover opportunities to grow your future</p>
+              <h1 className="text-2xl font-bold text-foreground">{t('youthDashboard')}</h1>
+              <p className="text-muted-foreground">{t('discoverOpportunities')}</p>
             </div>
           </div>
           <div className="flex gap-3">
@@ -89,7 +91,7 @@ const YouthDashboard = ({ onBack }: YouthDashboardProps) => {
                 onClick={() => window.location.href = '/app'}
               >
                 <Briefcase className="h-4 w-4 mr-2" />
-                Full Platform
+                {t('fullPlatform')}
               </Button>
             ) : (
               <Button 
@@ -97,7 +99,7 @@ const YouthDashboard = ({ onBack }: YouthDashboardProps) => {
                 onClick={() => setShowAuth(true)}
               >
                 <LogIn className="h-4 w-4 mr-2" />
-                Sign In for Full Access
+                {t('signInForFullAccess')}
               </Button>
             )}
             <Button 

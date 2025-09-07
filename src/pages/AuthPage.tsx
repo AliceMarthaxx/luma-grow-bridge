@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Eye, EyeOff, Users, Building, Globe } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
 import UserTypeCard from "@/components/UserTypeCard";
 
 type UserType = "youth" | "ngo" | "government";
@@ -24,6 +25,7 @@ const AuthPage = () => {
   
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (user) {
